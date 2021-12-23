@@ -175,4 +175,5 @@ public class MainController {
         toggleRedBtn.selectedProperty().addListener(getTableFiltersChangeListener(predicateRed));
         toggleWithDBtn.selectedProperty().addListener(getTableFiltersChangeListener(predicateWithD));
     }
+
 }
