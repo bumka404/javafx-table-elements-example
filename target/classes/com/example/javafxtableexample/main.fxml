@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="680.0" spacing="12.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafxtableexample.MainController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+   <HBox nodeOrientation="LEFT_TO_RIGHT" spacing="30.0" VBox.vgrow="SOMETIMES">
+      <children>
+         <Button fx:id="generateBtn" mnemonicParsing="false" onAction="#onGenerateBtnClick" prefWidth="80.0" text="Generate" />
+         <Button fx:id="clearBtn" mnemonicParsing="false" onAction="#onClearBtnClick" prefWidth="80.0" text="Clear" />
+         <Button fx:id="addBtn" mnemonicParsing="false" onAction="#onAddBtnClick" prefWidth="80.0" text="Add" />
+      </children>
+   </HBox>
+   <HBox spacing="30.0" VBox.vgrow="ALWAYS">
+      <children>
+         <ToggleButton fx:id="toggleOddBtn" mnemonicParsing="false" prefWidth="80.0" text="Only odd" />
+         <ToggleButton fx:id="toggleWithDBtn" mnemonicParsing="false" prefWidth="80.0" text="Only with A" />
+         <ToggleButton fx:id="toggleTrueBtn" mnemonicParsing="false" prefWidth="80.0" text="OnlyTrue" />
+         <ToggleButton fx:id="toggleRedBtn" mnemonicParsing="false" prefWidth="80.0" text="Only red" />
+         <TextField fx:id="searchField" />
+      </children>
+   </HBox>
+   <AnchorPane VBox.vgrow="ALWAYS">
+      <children>
+         <TableView fx:id="mainTable" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+           <columns>
+             <TableColumn fx:id="integerTableColumn" prefWidth="60" text="int" />
+             <TableColumn fx:id="stringTableColumn" prefWidth="150" text="string" />
+               <TableColumn fx:id="booleanTableColumn" prefWidth="110" text="boolean" />
+               <TableColumn fx:id="buttonsColumn" prefWidth="130" text="buttons" />
+           </columns>
+         </TableView>
+      </children>
+   </AnchorPane>
+   <HBox alignment="CENTER" prefHeight="20.0" spacing="60.0" VBox.vgrow="ALWAYS">
+      <children>
+         <Label fx:id="labelIntCount" />
+         <Label fx:id="labelWithACount" />
+         <Label fx:id="labelTrueCount" />
+      </children>
+   </HBox>
+</VBox>
