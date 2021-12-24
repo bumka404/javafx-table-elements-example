@@ -16,13 +16,6 @@ import java.util.function.Predicate;
 
 public class MainController {
     @FXML
-    private Label labelIntCount;
-    @FXML
-    private Label labelWithACount;
-    @FXML
-    private Label labelTrueCount;
-
-    @FXML
     private Button generateBtn;
     @FXML
     private Button clearBtn;
@@ -109,9 +102,12 @@ public class MainController {
         filteredData = new FilteredList<DataRow>(dataRowObservableList, p -> true);
 
         searchField.textProperty().addListener(getSearchChangeListener());
+        PredicateContains<DataRow> predicateContains = new PredicateContains<DataRow>();
+        dataFilters.add(predicateContains);
         filteredData.predicateProperty().bind(Bindings.createObjectBinding(() ->
                         dataFilters.stream().reduce(x -> true, Predicate::and),
                 dataFilters));
+
         setDataFilterElements();
 
         mainTable.setItems(filteredData);
@@ -143,14 +139,14 @@ public class MainController {
 
     private ChangeListener<String> getSearchChangeListener() {
         return new ChangeListener<String>() {
+            PredicateContains<DataRow> predicateContains = new PredicateContains<DataRow>();
+
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldvalue, String newValue) {
-                filteredData.setPredicate(row -> {
-                    if (newValue == null || newValue.isEmpty()) return true;
-                    if (row.getStringData().contains(newValue) || String.valueOf(row.getIntData()).contains(newValue)) return true;
-                    return false;
-                });
-            }
+                dataFilters.remove(predicateContains);
+                predicateContains.setValues(oldvalue, newValue);
+                dataFilters.add(predicateContains);
+            };
         };
     }
 
