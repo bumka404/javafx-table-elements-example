@@ -6,10 +6,10 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class DataRow {
 
-    private SimpleIntegerProperty intData;
-    private SimpleStringProperty stringData;
-    private SimpleBooleanProperty boolData;
-    private SimpleBooleanProperty btnData;
+    private final SimpleIntegerProperty intData;
+    private final SimpleStringProperty stringData;
+    private final SimpleBooleanProperty boolData;
+    private final SimpleBooleanProperty btnData;
 
     public DataRow(int intData, String stringData, boolean boolData, boolean btnData) {
         this.intData = new SimpleIntegerProperty(intData);

@@ -7,11 +7,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.*;
 import javafx.util.Callback;
 
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Predicate;
 
 public class MainController {
@@ -51,13 +55,33 @@ public class MainController {
 
     @FXML
     private void initialize() {
+        final KeyCodeCombination keyCodeCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
+
         integerTableColumn.setCellValueFactory(new PropertyValueFactory<>("intData"));
         stringTableColumn.setCellValueFactory(new PropertyValueFactory<>("stringData"));
         booleanTableColumn.setCellValueFactory(new PropertyValueFactory<>("boolData"));
+        stringTableColumn.setCellFactory(new DragSelectionCellFactory());
+        integerTableColumn.setCellFactory(new DragSelectionCellFactory());
+        booleanTableColumn.setCellFactory(new DragSelectionCellFactory());
 
         Callback<TableColumn<DataRow, Boolean>, TableCell<DataRow, Boolean>> cellFactory =
                 (final TableColumn<DataRow, Boolean> param) -> {
                     final TableCell<DataRow, Boolean> cell = new TableCell<DataRow, Boolean>() {
+                        {
+                            setOnDragDetected(new EventHandler<MouseEvent>() {
+                                @Override
+                                public void handle(MouseEvent event) {
+                                    startFullDrag();
+                                    getTableColumn().getTableView().getSelectionModel().select(getIndex(), getTableColumn());
+                                }
+                            });
+                            setOnMouseDragEntered(new EventHandler<MouseDragEvent>() {
+                                @Override
+                                public void handle(MouseDragEvent event) {
+                                    getTableColumn().getTableView().getSelectionModel().select(getIndex(), getTableColumn());
+                                }
+                            });
+                        }
                         private Button btn = new Button();
 
                         {
@@ -111,6 +135,16 @@ public class MainController {
         setDataFilterElements();
 
         mainTable.setItems(filteredData);
+        mainTable.getSelectionModel().setCellSelectionEnabled(true);
+        mainTable.getSelectionModel().setSelectionMode(
+                SelectionMode.MULTIPLE
+        );
+
+        mainTable.setOnKeyPressed(event -> {
+            if (keyCodeCopy.match(event)) {
+                copySelectionToClipboard(mainTable);
+            }
+        });
     }
 
     @FXML
@@ -172,4 +206,65 @@ public class MainController {
         toggleWithDBtn.selectedProperty().addListener(getTableFiltersChangeListener(predicateWithD));
     }
 
+    @SuppressWarnings("rawtypes")
+    public void copySelectionToClipboard(final TableView<?> table) {
+        final Set<Integer> rows = new TreeSet<>();
+        for (final TablePosition tablePosition : table.getSelectionModel().getSelectedCells()) {
+            rows.add(tablePosition.getRow());
+        }
+        final StringBuilder strb = new StringBuilder();
+        boolean firstRow = true;
+        for (final Integer row : rows) {
+            if (!firstRow) {
+                strb.append('\n');
+            }
+            firstRow = false;
+            boolean firstCol = true;
+            for (final TableColumn<?, ?> column : table.getColumns()) {
+                if (!firstCol) {
+                    strb.append("; ");
+                }
+                firstCol = false;
+                final Object cellData = column.getCellData(row);
+                strb.append(cellData == null ? "" : cellData.toString());
+            }
+        }
+        final ClipboardContent clipboardContent = new ClipboardContent();
+        clipboardContent.putString(strb.toString());
+        Clipboard.getSystemClipboard().setContent(clipboardContent);
+    }
+
+//    public static class DragSelectionCellFactory implements Callback<TableColumn<DataRow, String>, TableCell<DataRow, String>> {
+//        @Override
+//        public TableCell<DataRow, String> call(final TableColumn<DataRow, String> col) {
+//            return new DragSelectionStringCell();
+//        }
+//    }
+
+//    public static class DragSelectionCell extends TableCell<DataRow, String> {
+//        public DragSelectionCell() {
+//            setOnDragDetected(new EventHandler<MouseEvent>() {
+//                @Override
+//                public void handle(MouseEvent event) {
+//                    startFullDrag();
+//                    getTableColumn().getTableView().getSelectionModel().select(getIndex(), getTableColumn());
+//                }
+//            });
+//            setOnMouseDragEntered(new EventHandler<MouseDragEvent>() {
+//                @Override
+//                public void handle(MouseDragEvent event) {
+//                    getTableColumn().getTableView().getSelectionModel().select(getIndex(), getTableColumn());
+//                }
+//            });
+//        }
+//        @Override
+//        public void updateItem(String item, boolean empty) {
+//            super.updateItem(item, empty);
+//            if (empty) {
+//                setText(null);
+//            } else {
+//                setText(item);
+//            }
+//        }
+//    }
 }
